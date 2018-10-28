@@ -1,20 +1,36 @@
 <template>
     <div class="svg-container">
         <svg :width="width" :height="height">
-            <rect v-for="(rectangle, index) of rectangles" :key="index"
-                  :x="rectangle.x" :y="rectangle.y"
-                  :width="rectangle.width" :height="rectangle.height"
-                  :class="rectangle.colorClass"></rect>
-            <line v-for="horizontal in horizontals" :key="horizontal.id"
-                  :x1="horizontal.start.x" :y1="horizontal.start.y"
-                  :x2="horizontal.end.x" :y2="horizontal.end.y"
-                  :stroke-width="horizontal.width"
-                  ></line>
-            <line v-for="vertical in verticals" :key="vertical.id"
-                  :x1="vertical.start.x" :y1="vertical.start.y"
-                  :x2="vertical.end.x" :y2="vertical.end.y"
-                  :stroke-width="vertical.width"
-            ></line>
+            <g mask="url(#texture)">
+                <rect v-for="(rectangle, index) of rectangles" :key="index"
+                      :x="rectangle.x" :y="rectangle.y"
+                      :width="rectangle.width" :height="rectangle.height"
+                      :class="rectangle.colorClass"></rect>
+                <line v-for="horizontal in horizontals" :key="horizontal.id"
+                      :x1="horizontal.start.x" :y1="horizontal.start.y"
+                      :x2="horizontal.end.x" :y2="horizontal.end.y"
+                      :stroke-width="horizontal.width"
+                      style="filter: url(#displacementFilter)"></line>
+                <line v-for="vertical in verticals" :key="vertical.id"
+                      :x1="vertical.start.x" :y1="vertical.start.y"
+                      :x2="vertical.end.x" :y2="vertical.end.y"
+                      :stroke-width="vertical.width"
+                      style="filter: url(#displacementFilter)"></line>
+            </g>
+            <defs>
+                <pattern x="0" y="0" width="256" height="256" id="texture-pattern" patternUnits="userSpaceOnUse">
+                    <image xlink:href="img/textile.png" width="256" height="256"></image>
+                </pattern>
+                <mask id="texture">
+                    <rect :height="height" :width="width" fill="url(#texture-pattern)"></rect>
+                </mask>
+                <filter x="0" y="0" :height="height" :width="width" id="displacementFilter" filterUnits="userSpaceOnUse">
+                    <feTurbulence type="turbulence" baseFrequency="1.5"
+                                  numOctaves="2" result="turbulence"></feTurbulence>
+                    <feDisplacementMap in2="turbulence" in="SourceGraphic"
+                                       scale="1" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+                </filter>
+            </defs>
         </svg>
     </div>
 </template>
@@ -64,11 +80,11 @@ export default {
     getHorizontals() {
       const lines = this.getLines(5, this.height);
       let widthBase = Math.floor(this.height / 50);
-      widthBase += this.poisson(Math.floor(widthBase / 10));
+      widthBase += this.poisson(widthBase / 10);
       this.horizontals = lines.map((l, idx) => {
         return {
           id: `horizontal-${idx}`,
-          width: widthBase + this.poisson(Math.floor(widthBase / 10)),
+          width: widthBase + this.poisson(widthBase / 10),
           start: {
             x: 0,
             y: l
@@ -83,11 +99,11 @@ export default {
     getVerticals() {
       const lines = this.getLines(10, this.width);
       let widthBase = Math.floor(this.width / 50);
-      widthBase += this.poisson(Math.floor(widthBase / 10));
+      widthBase += this.poisson(widthBase / 10);
       this.verticals = lines.map((l, idx) => {
         return {
           id: `vertical-${idx}`,
-          width: widthBase + this.poisson(Math.floor(widthBase / 10)),
+          width: widthBase + this.poisson(widthBase / 10),
           start: {
             x: l,
             y: 0
@@ -180,8 +196,14 @@ export default {
       const whiteClasses = ["white-base", "white-light", "white-dark"];
       const colorClasses = [
         "red-base",
+        "red-dark",
+        "red-light",
         "yellow-base",
+        "yellow-dark",
+        "yellow-light",
         "blue-base",
+        "blue-dark",
+        "blue-light",
         "black-base"
       ];
       const isColorful = Math.random() < 0.2;
@@ -260,11 +282,29 @@ line {
 .red-base {
   fill: $base-red;
 }
+.red-light {
+  fill: lighten($base-red, 3%);
+}
+.red-dark {
+  fill: darken($base-red, 3%);
+}
 .yellow-base {
   fill: $base-yellow;
 }
+.yellow-light {
+  fill: lighten($base-yellow, 3%);
+}
+.yellow-dark {
+  fill: darken($base-yellow, 3%);
+}
 .blue-base {
   fill: $base-blue;
+}
+.blue-light {
+  fill: darken($base-blue, 3%);
+}
+.blue-dark {
+  fill: lighten($base-blue, 3%);
 }
 .black-base {
   fill: $base-black;
