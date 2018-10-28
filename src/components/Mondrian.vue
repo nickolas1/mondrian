@@ -62,9 +62,10 @@ export default {
   methods: {
     getSvgWidth() {
       this.width = Math.min(this.$el.offsetHeight, this.$el.offsetWidth);
-      this.height = this.width;
+      this.height = this.width; //todo: make rectangles?
     },
     getLines(nLines, size) {
+      //base line generator
       const lambda = Math.floor(Math.random() * 5) + 1;
       let lines = [Math.max(1, this.poisson(lambda))];
       for (let i = 1; i < nLines + 1; i++) {
@@ -78,6 +79,7 @@ export default {
       return lines;
     },
     getHorizontals() {
+      // establish base horizontal lines
       const lines = this.getLines(10, this.height);
       let widthBase = Math.floor(this.height / 64);
       widthBase += this.poisson(widthBase / 4);
@@ -97,6 +99,7 @@ export default {
       });
     },
     getVerticals() {
+      // establish base vertical lines
       const lines = this.getLines(10, this.width);
       let widthBase = Math.floor(this.width / 64);
       widthBase += this.poisson(widthBase / 4);
@@ -116,6 +119,7 @@ export default {
       });
     },
     adjustEndpoints() {
+      // scoot the ends of the lines in a bit
       this.horizontals.forEach(h => {
         const startIdx = Math.min(this.poisson(1), this.verticals.length - 2);
         const endIdx = Math.max(
@@ -166,6 +170,7 @@ export default {
       });
     },
     getRectangles() {
+      // figure out the rectangles via brutal force
       const rectangles = new Map();
       const xs = [...this.verticals.map(v => v.start.x - 1), this.width - 1];
       const ys = [...this.horizontals.map(h => h.start.y - 1), this.height - 1];
@@ -182,6 +187,7 @@ export default {
       this.rectangles = rectArray;
     },
     getColor() {
+      // give rectangles some color
       const whiteClasses = ["white-base", "white-light", "white-dark"];
       const colorClasses = [
         "red-base",
@@ -209,17 +215,21 @@ export default {
       let y1 = undefined;
       this.verticals.forEach(v => {
         if (v.start.x < x && v.start.y < y && v.end.y > y) {
+          // the last vertical that bounds this point to the left
           x0 = v.start.x;
         }
         if (!x1 && v.start.x > x && v.start.y < y && v.end.y > y) {
+          // the first vertical that bounds this point to the right
           x1 = v.start.x;
         }
       });
       this.horizontals.forEach(h => {
         if (h.start.y < y && h.start.x < x && h.end.x > x) {
+          // the last horizontal that bounds this point to the top
           y0 = h.start.y;
         }
         if (!y1 && h.start.y > y && h.start.x < x && h.end.x > x) {
+          // the first horizontal that bounds this point to the bottom
           y1 = h.start.y;
         }
       });
@@ -233,6 +243,7 @@ export default {
       };
     },
     poisson(lambda) {
+      // sample from poisson distribution, ala knuth
       var L = Math.exp(-lambda);
       var k = 0;
       var p = 1;
@@ -259,7 +270,6 @@ $base-black: #17171a;
 line {
   stroke: darken($base-black, 15%);
 }
-
 .white-base {
   fill: $base-white;
 }

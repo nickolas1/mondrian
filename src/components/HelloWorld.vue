@@ -18,11 +18,11 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .mondrian-container {
   width: 85vw;
   height: 85vh;
+  margin: 0 auto;
 }
 h3 {
   margin: 40px 0 0;
