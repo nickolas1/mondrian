@@ -41,13 +41,28 @@ import { mulberry32, poisson } from "../random-util";
 export default {
   name: "Mondrian",
   props: {
-    msg: String
+    rngSeed: Number,
+    linesBase: {
+      type: Number,
+      default: 6
+    },
+    colorProbability: {
+      type: Number,
+      default: 20
+    },
+    redProbability: {
+      type: Number,
+      default: 30
+    },
+    blueProbability: {
+      type: Number,
+      default: 30
+    }
   },
   data() {
     return {
       width: 100,
       height: 100,
-      aspectRatio: 1,
       horizontals: [],
       verticals: [],
       rectangles: [],
@@ -55,15 +70,37 @@ export default {
     };
   },
   mounted() {
-    this.rand = mulberry32(11111);
-    this.aspectRatio = 1 + (0.5 - this.rand()) * 0.1;
-    this.getSvgWidth();
-    this.getHorizontals();
-    this.getVerticals();
-    this.adjustEndpoints();
-    this.getRectangles();
+    this.rand = mulberry32(110111);
+    this.drawEverything();
+  },
+  computed: {
+    yellowProbability() {
+      return (this.redProbability + this.blueProbability) / 2;
+    }
+  },
+  watch: {
+    linesBase: function() {
+      this.drawEverything();
+    },
+    colorProbability: function() {
+      this.drawEverything();
+    },
+    redProbability: function() {
+      this.drawEverything();
+    },
+    blueProbability: function() {
+      this.drawEverything();
+    }
   },
   methods: {
+    drawEverything() {
+      this.rand = mulberry32(110111);
+      this.getSvgWidth();
+      this.getHorizontals();
+      this.getVerticals();
+      this.adjustEndpoints();
+      this.getRectangles();
+    },
     getSvgWidth() {
       this.width = Math.min(this.$el.offsetHeight, this.$el.offsetWidth);
       this.height = this.width; //todo: make rectangles?
@@ -84,7 +121,7 @@ export default {
     },
     getHorizontals() {
       // establish base horizontal lines
-      const lines = this.getLines(10, this.height);
+      const lines = this.getLines(this.linesBase, this.height);
       let widthBase = Math.floor(this.height / 64);
       widthBase += poisson(widthBase / 4, this.rand);
       this.horizontals = lines.map((l, idx) => {
@@ -104,7 +141,7 @@ export default {
     },
     getVerticals() {
       // establish base vertical lines
-      const lines = this.getLines(10, this.width);
+      const lines = this.getLines(this.linesBase, this.width);
       let widthBase = Math.floor(this.width / 64);
       widthBase += poisson(widthBase / 4, this.rand);
       this.verticals = lines.map((l, idx) => {
@@ -198,23 +235,24 @@ export default {
     },
     getColor() {
       // give rectangles some color
-      const whiteClasses = ["white-base", "white-light", "white-dark"];
-      const colorClasses = [
-        "red-base",
-        "red-dark",
-        "red-light",
-        "yellow-base",
-        "yellow-dark",
-        "yellow-light",
-        "blue-base",
-        "blue-dark",
-        "blue-light",
-        "black-base"
-      ];
-      const isColorful = this.rand() < 0.2;
-      let array = whiteClasses;
-      if (isColorful) {
-        array = colorClasses;
+      let array = ["white-base", "white-light", "white-dark"];
+      if (this.rand() < this.colorProbability / 100) {
+        let c = this.rand();
+        if (c < this.redProbability / 100) {
+          array = ["red-base", "red-dark", "red-light"];
+        } else if (c < (this.redProbability + this.blueProbability) / 100) {
+          array = ["blue-base", "blue-dark", "blue-light"];
+        } else if (
+          c <
+          (this.redProbability +
+            this.blueProbability +
+            this.yellowProbability) /
+            100
+        ) {
+          array = ["yellow-base", "yellow-dark", "yellow-light"];
+        } else {
+          array = ["black-base"];
+        }
       }
       return array[Math.floor(this.rand() * array.length)];
     },
