@@ -78,13 +78,13 @@ export default {
       return lines;
     },
     getHorizontals() {
-      const lines = this.getLines(5, this.height);
-      let widthBase = Math.floor(this.height / 50);
-      widthBase += this.poisson(widthBase / 10);
+      const lines = this.getLines(10, this.height);
+      let widthBase = Math.floor(this.height / 64);
+      widthBase += this.poisson(widthBase / 4);
       this.horizontals = lines.map((l, idx) => {
         return {
           id: `horizontal-${idx}`,
-          width: widthBase + this.poisson(widthBase / 10),
+          width: widthBase + this.poisson(widthBase / 8),
           start: {
             x: 0,
             y: l
@@ -98,12 +98,12 @@ export default {
     },
     getVerticals() {
       const lines = this.getLines(10, this.width);
-      let widthBase = Math.floor(this.width / 50);
-      widthBase += this.poisson(widthBase / 10);
+      let widthBase = Math.floor(this.width / 64);
+      widthBase += this.poisson(widthBase / 4);
       this.verticals = lines.map((l, idx) => {
         return {
           id: `vertical-${idx}`,
-          width: widthBase + this.poisson(widthBase / 10),
+          width: widthBase + this.poisson(widthBase / 8),
           start: {
             x: l,
             y: 0
@@ -120,7 +120,7 @@ export default {
         const startIdx = Math.min(this.poisson(1), this.verticals.length - 2);
         const endIdx = Math.max(
           startIdx + 1,
-          this.verticals.length - 1 - this.poisson(0)
+          this.verticals.length - 1 - this.poisson(1)
         );
         if (
           startIdx > 0 &&
@@ -140,8 +140,8 @@ export default {
       this.verticals.forEach(h => {
         const startIdx = Math.min(this.poisson(1), this.horizontals.length - 2);
         const endIdx = Math.max(
-          startIdx,
-          this.horizontals.length - 1 - this.poisson(0)
+          startIdx + 1,
+          this.horizontals.length - 1 - this.poisson(1)
         );
         let truncateOk = true;
         for (let i = 0; i <= startIdx; i++) {
@@ -160,32 +160,21 @@ export default {
             (this.horizontals[i].start.x < h.start.x &&
               this.horizontals[i].end.x > h.start.x);
         }
-        if (
-          endIdx < this.horizontals.length - 1 &&
-          this.horizontals[endIdx].start.x < h.start.x &&
-          this.horizontals[endIdx].end.x > h.start.x
-        ) {
+        if (endIdx < this.horizontals.length - 1 && truncateOk) {
           h.end.y = this.horizontals[endIdx].start.y;
         }
       });
     },
     getRectangles() {
       const rectangles = new Map();
-      this.verticals.forEach(v => {
-        this.horizontals.forEach(h => {
-          const rect = this.getBoundingRectangle(v.start.x - 1, h.start.y - 1);
+      const xs = [...this.verticals.map(v => v.start.x - 1), this.width - 1];
+      const ys = [...this.horizontals.map(h => h.start.y - 1), this.height - 1];
+      xs.forEach(x => {
+        ys.forEach(y => {
+          const rect = this.getBoundingRectangle(x, y);
           rectangles.set(`${rect.x}-${rect.y}`, rect);
         });
-        const rect = this.getBoundingRectangle(v.start.x - 1, this.height - 1);
-        rectangles.set(`${rect.x}-${rect.y}`, rect);
       });
-      this.horizontals.forEach(h => {
-        const rect = this.getBoundingRectangle(this.width - 1, h.start.y - 1);
-        rectangles.set(`${rect.x}-${rect.y}`, rect);
-      });
-      const rect = this.getBoundingRectangle(this.width - 1, this.height - 1);
-      rectangles.set(`${rect.x}-${rect.y}`, rect);
-
       const rectArray = Array.from(rectangles.values());
       rectArray.forEach(r => {
         r.colorClass = this.getColor();
@@ -219,18 +208,18 @@ export default {
       let y0 = 0;
       let y1 = undefined;
       this.verticals.forEach(v => {
-        if (v.start.x < x && v.start.y < y) {
+        if (v.start.x < x && v.start.y < y && v.end.y > y) {
           x0 = v.start.x;
         }
-        if (!x1 && v.start.x > x && v.start.y < y) {
+        if (!x1 && v.start.x > x && v.start.y < y && v.end.y > y) {
           x1 = v.start.x;
         }
       });
       this.horizontals.forEach(h => {
-        if (h.start.y < y && h.start.x < x) {
+        if (h.start.y < y && h.start.x < x && h.end.x > x) {
           y0 = h.start.y;
         }
-        if (!y1 && h.start.y > y && h.start.x < x) {
+        if (!y1 && h.start.y > y && h.start.x < x && h.end.x > x) {
           y1 = h.start.y;
         }
       });
@@ -270,6 +259,7 @@ $base-black: #17171a;
 line {
   stroke: darken($base-black, 15%);
 }
+
 .white-base {
   fill: $base-white;
 }
