@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid grid-list-sm>
+    <v-container fluid grid-list-xs>
         <v-layout row wrap>
             <v-flex xs12>
                 <v-slider v-model="linesInterface"
@@ -10,35 +10,42 @@
 
             <v-flex xs12>
                 <v-slider v-model="colorInterface"
-                          :label="`color % ${colorProbability}`"></v-slider>
+                          :label="`color % ${colorPercentage}`"></v-slider>
             </v-flex>
 
             <v-flex xs12>
                 <v-slider v-model="blueInterface"
-                          :label="`blue % ${blueProbability}`"></v-slider>
+                          :label="`blue % ${bluePercentage}`"></v-slider>
             </v-flex>
 
             <v-flex xs12>
                 <v-slider v-model="redInterface"
-                          :label="`red % ${redProbability}`"></v-slider>
+                          :label="`red % ${redPercentage}`"></v-slider>
+            </v-flex>
+
+            <v-flex xs12>
+                <v-slider v-model="yellowInterface"
+                          :label="`yellow % ${yellowPercentage}`"></v-slider>
             </v-flex>
 
             <v-flex xs12>
                 <v-slider v-model="mutedInterface"
-                          :label="`muted % ${mutedProbability}`"></v-slider>
+                          :label="`muted % ${mutedPercentage}`"></v-slider>
             </v-flex>
         </v-layout>
     </v-container>
 </template>
 <script>
 export default {
+  name: "Paramaterizer",
   props: {
     rngSeed: Number,
     linesBase: Number,
-    colorProbability: Number,
-    redProbability: Number,
-    blueProbability: Number,
-    mutedProbability: Number
+    colorPercentage: Number,
+    redPercentage: Number,
+    bluePercentage: Number,
+    yellowPercentage: Number,
+    mutedPercentage: Number
   },
   computed: {
     rngInterface: {
@@ -59,34 +66,42 @@ export default {
     },
     colorInterface: {
       get() {
-        return this.colorProbability;
+        return this.colorPercentage;
       },
       set(val) {
-        this.$emit("set-param", { property: "colorProbability", value: val });
+        this.$emit("set-param", { property: "colorPercentage", value: val });
       }
     },
     redInterface: {
       get() {
-        return this.redProbability;
+        return this.redPercentage;
       },
       set(val) {
-        this.$emit("set-param", { property: "redProbability", value: val });
+        this.$emit("set-param", { property: "redPercentage", value: val });
       }
     },
     blueInterface: {
       get() {
-        return this.blueProbability;
+        return this.bluePercentage;
       },
       set(val) {
-        this.$emit("set-param", { property: "blueProbability", value: val });
+        this.$emit("set-param", { property: "bluePercentage", value: val });
+      }
+    },
+    yellowInterface: {
+      get() {
+        return this.yellowPercentage;
+      },
+      set(val) {
+        this.$emit("set-param", { property: "yellowPercentage", value: val });
       }
     },
     mutedInterface: {
       get() {
-        return this.mutedProbability;
+        return this.mutedPercentage;
       },
       set(val) {
-        this.$emit("set-param", { property: "mutedProbability", value: val });
+        this.$emit("set-param", { property: "mutedPercentage", value: val });
       }
     }
   }

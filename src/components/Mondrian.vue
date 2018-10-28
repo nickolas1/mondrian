@@ -42,22 +42,12 @@ export default {
   name: "Mondrian",
   props: {
     rngSeed: Number,
-    linesBase: {
-      type: Number,
-      default: 6
-    },
-    colorProbability: {
-      type: Number,
-      default: 20
-    },
-    redProbability: {
-      type: Number,
-      default: 30
-    },
-    blueProbability: {
-      type: Number,
-      default: 30
-    }
+    linesBase: Number,
+    colorPercentage: Number,
+    redPercentage: Number,
+    bluePercentage: Number,
+    yellowPercentage: Number,
+    mutedPercentage: Number
   },
   data() {
     return {
@@ -70,31 +60,28 @@ export default {
     };
   },
   mounted() {
-    this.rand = mulberry32(110111);
-    this.drawEverything();
-  },
-  computed: {
-    yellowProbability() {
-      return (this.redProbability + this.blueProbability) / 2;
-    }
+    this.getSvgWidth();
   },
   watch: {
     linesBase: function() {
       this.drawEverything();
     },
-    colorProbability: function() {
+    colorPercentage: function() {
       this.drawEverything();
     },
-    redProbability: function() {
+    redPercentage: function() {
       this.drawEverything();
     },
-    blueProbability: function() {
+    bluePercentage: function() {
+      this.drawEverything();
+    },
+    yellowPercentage: function() {
       this.drawEverything();
     }
   },
   methods: {
     drawEverything() {
-      this.rand = mulberry32(110111);
+      this.rand = mulberry32(this.rngSeed);
       this.getSvgWidth();
       this.getHorizontals();
       this.getVerticals();
@@ -236,17 +223,15 @@ export default {
     getColor() {
       // give rectangles some color
       let array = ["white-base", "white-light", "white-dark"];
-      if (this.rand() < this.colorProbability / 100) {
+      if (this.rand() < this.colorPercentage / 100) {
         let c = this.rand();
-        if (c < this.redProbability / 100) {
+        if (c < this.redPercentage / 100) {
           array = ["red-base", "red-dark", "red-light"];
-        } else if (c < (this.redProbability + this.blueProbability) / 100) {
+        } else if (c < (this.redPercentage + this.bluePercentage) / 100) {
           array = ["blue-base", "blue-dark", "blue-light"];
         } else if (
           c <
-          (this.redProbability +
-            this.blueProbability +
-            this.yellowProbability) /
+          (this.redPercentage + this.bluePercentage + this.yellowPercentage) /
             100
         ) {
           array = ["yellow-base", "yellow-dark", "yellow-light"];
