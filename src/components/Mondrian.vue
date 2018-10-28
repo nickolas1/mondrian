@@ -36,8 +36,10 @@
 </template>
 
 <script>
+import { mulberry32, poisson } from "../random-util";
+
 export default {
-  name: "HelloWorld",
+  name: "Mondrian",
   props: {
     msg: String
   },
@@ -48,11 +50,13 @@ export default {
       aspectRatio: 1,
       horizontals: [],
       verticals: [],
-      rectangles: []
+      rectangles: [],
+      rand: undefined
     };
   },
   mounted() {
-    this.aspectRatio = 1 + (0.5 - Math.random()) * 0.1;
+    this.rand = mulberry32(11111);
+    this.aspectRatio = 1 + (0.5 - this.rand()) * 0.1;
     this.getSvgWidth();
     this.getHorizontals();
     this.getVerticals();
@@ -66,10 +70,10 @@ export default {
     },
     getLines(nLines, size) {
       //base line generator
-      const lambda = Math.floor(Math.random() * 5) + 1;
-      let lines = [Math.max(1, this.poisson(lambda))];
+      const lambda = Math.floor(this.rand() * 5) + 1;
+      let lines = [Math.max(1, poisson(lambda, this.rand))];
       for (let i = 1; i < nLines + 1; i++) {
-        lines[i] = lines[i - 1] + this.poisson(lambda);
+        lines[i] = lines[i - 1] + poisson(lambda, this.rand);
       }
       const scale = size / lines[nLines];
       lines = lines.map(h => Math.floor(h * scale));
@@ -82,11 +86,11 @@ export default {
       // establish base horizontal lines
       const lines = this.getLines(10, this.height);
       let widthBase = Math.floor(this.height / 64);
-      widthBase += this.poisson(widthBase / 4);
+      widthBase += poisson(widthBase / 4, this.rand);
       this.horizontals = lines.map((l, idx) => {
         return {
           id: `horizontal-${idx}`,
-          width: widthBase + this.poisson(widthBase / 8),
+          width: widthBase + poisson(widthBase / 8, this.rand),
           start: {
             x: 0,
             y: l
@@ -102,11 +106,11 @@ export default {
       // establish base vertical lines
       const lines = this.getLines(10, this.width);
       let widthBase = Math.floor(this.width / 64);
-      widthBase += this.poisson(widthBase / 4);
+      widthBase += poisson(widthBase / 4, this.rand);
       this.verticals = lines.map((l, idx) => {
         return {
           id: `vertical-${idx}`,
-          width: widthBase + this.poisson(widthBase / 8),
+          width: widthBase + poisson(widthBase / 8, this.rand),
           start: {
             x: l,
             y: 0
@@ -121,10 +125,13 @@ export default {
     adjustEndpoints() {
       // scoot the ends of the lines in a bit
       this.horizontals.forEach(h => {
-        const startIdx = Math.min(this.poisson(1), this.verticals.length - 2);
+        const startIdx = Math.min(
+          poisson(1, this.rand),
+          this.verticals.length - 2
+        );
         const endIdx = Math.max(
           startIdx + 1,
-          this.verticals.length - 1 - this.poisson(1)
+          this.verticals.length - 1 - poisson(1, this.rand)
         );
         if (
           startIdx > 0 &&
@@ -142,10 +149,13 @@ export default {
         }
       });
       this.verticals.forEach(h => {
-        const startIdx = Math.min(this.poisson(1), this.horizontals.length - 2);
+        const startIdx = Math.min(
+          poisson(1, this.rand),
+          this.horizontals.length - 2
+        );
         const endIdx = Math.max(
           startIdx + 1,
-          this.horizontals.length - 1 - this.poisson(1)
+          this.horizontals.length - 1 - poisson(1, this.rand)
         );
         let truncateOk = true;
         for (let i = 0; i <= startIdx; i++) {
@@ -201,12 +211,12 @@ export default {
         "blue-light",
         "black-base"
       ];
-      const isColorful = Math.random() < 0.2;
+      const isColorful = this.rand() < 0.2;
       let array = whiteClasses;
       if (isColorful) {
         array = colorClasses;
       }
-      return array[Math.floor(Math.random() * array.length)];
+      return array[Math.floor(this.rand() * array.length)];
     },
     getBoundingRectangle(x, y) {
       let x0 = 0;
@@ -241,17 +251,6 @@ export default {
         width: x1 - x0,
         height: y1 - y0
       };
-    },
-    poisson(lambda) {
-      // sample from poisson distribution, ala knuth
-      var L = Math.exp(-lambda);
-      var k = 0;
-      var p = 1;
-      do {
-        k++;
-        p *= Math.random();
-      } while (p > L);
-      return k - 1;
     }
   }
 };

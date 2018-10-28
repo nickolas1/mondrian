@@ -1,11 +1,13 @@
 <template>
   <div class="mondrian-container">
     <Mondrian></Mondrian>
+    <Parameterizer></Parameterizer>
   </div>
 </template>
 
 <script>
 import Mondrian from "./Mondrian";
+import Parameterizer from "./Parameterizer";
 
 export default {
   name: "HelloWorld",
@@ -13,29 +15,16 @@ export default {
     msg: String
   },
   components: {
-    Mondrian
+    Mondrian,
+    Parameterizer
   }
 };
 </script>
 
 <style scoped lang="scss">
 .mondrian-container {
-  width: 85vw;
   height: 85vh;
-  margin: 0 auto;
-}
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+  width: 85vh;
+  margin: auto;
 }
 </style>
