@@ -1,7 +1,27 @@
 import Vue from "vue";
-import Vuetify from "vuetify/lib";
+import Vuetify, {
+  VApp,
+  VContainer,
+  VLayout,
+  VFlex,
+  VSlider,
+  VTextField,
+  VResponsive
+} from "vuetify/lib";
+import { Resize } from "vuetify/lib/directives";
 import "vuetify/src/stylus/app.styl";
 
 Vue.use(Vuetify, {
-  iconfont: "md"
+  components: {
+    VApp,
+    VContainer,
+    VLayout,
+    VFlex,
+    VSlider,
+    VTextField,
+    VResponsive
+  },
+  directives: {
+    Resize
+  }
 });

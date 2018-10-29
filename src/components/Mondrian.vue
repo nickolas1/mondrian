@@ -1,5 +1,5 @@
 <template>
-    <div class="svg-container">
+    <div class="svg-container" v-resize="drawEverything">
         <svg :width="width" :height="height">
             <g mask="url(#texture)">
                 <rect v-for="(rectangle, index) of rectangles" :key="index"
@@ -92,7 +92,10 @@ export default {
       this.getRectangles();
     },
     getSvgWidth() {
-      this.width = Math.min(this.$el.offsetHeight, this.$el.offsetWidth);
+      this.width = Math.min(
+        this.$parent.$el.offsetHeight,
+        this.$parent.$el.offsetWidth
+      );
       this.height = this.width; //todo: make rectangles?
     },
     getLines(nLines, size) {
