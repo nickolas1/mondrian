@@ -19,6 +19,13 @@ export default {
     description: undefined
   },
   computed: {
+    titleString() {
+      if (this.description.id) {
+        return `Composition No. ${this.description.id}`;
+      } else {
+        return `Composition No. ?`;
+      }
+    },
     descriptionString() {
       try {
         let conditionString = this.description.description.join(" and ");

@@ -1,4 +1,4 @@
 module.exports = {
   lintOnSave: false,
-  baseUrl: process.env.NODE_ENV === "production" ? "/my-project/" : "/"
+  baseUrl: process.env.NODE_ENV === "production" ? "/mondrian/" : "/"
 };

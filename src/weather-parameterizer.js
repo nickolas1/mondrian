@@ -23,7 +23,7 @@ export default class WeatherParameterizer {
         bluePercentage: limits.bluePercentage.base,
         yellowPercentage: limits.yellowPercentage.base,
         redPercentage: limits.redPercentage.base,
-        description: null
+        description: { id: this.now }
       };
     }
     this.getPrecipitations();
@@ -46,7 +46,7 @@ export default class WeatherParameterizer {
   }
 
   async getWeather() {
-    const apiBase = "http://api.openweathermap.org/data/2.5/weather";
+    const apiBase = "https://api.openweathermap.org/data/2.5/weather";
     try {
       const resp = await axios.get(
         `${apiBase}?id=${CITY_ID}&APPID=${WEATHER_API_ID}`
