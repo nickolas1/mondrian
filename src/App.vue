@@ -8,13 +8,13 @@
                 xl8 offset-xl2>
           <v-responsive :aspect-ratio="1">
             <Mondrian
-                    :rng-seed="rngSeed"
-                    :lines-base="linesBase"
-                    :color-percentage="colorPercentage"
-                    :blue-percentage="bluePercentage"
-                    :red-percentage="redPercentage"
-                    :yellow-percentage="yellowPercentage"
-                    :muted-percentage="mutedPercentage"></Mondrian>
+              :rng-seed="rngSeed"
+              :lines-base="linesBase"
+              :color-percentage="colorPercentage"
+              :blue-percentage="bluePercentage"
+              :red-percentage="redPercentage"
+              :yellow-percentage="yellowPercentage"
+              :muted-percentage="mutedPercentage"></Mondrian>
           </v-responsive>
         </v-flex>
         <v-flex xs10
@@ -27,6 +27,7 @@
       <v-layout row justify-center>
         <v-flex xs10>
           <Parameterizer
+            :rng-seed="rngSeed"
             :lines-base="linesBase"
             :color-percentage="colorPercentage"
             :blue-percentage="bluePercentage"

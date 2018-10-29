@@ -63,6 +63,9 @@ export default {
     this.getSvgWidth();
   },
   watch: {
+    rngSeed: function() {
+      this.drawEverything();
+    },
     linesBase: function() {
       this.drawEverything();
     },

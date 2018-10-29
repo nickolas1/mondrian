@@ -15,6 +15,17 @@ export default class WeatherParameterizer {
 
   async getParams() {
     this.weather = await this.getWeather();
+    if (this.weather == null) {
+      return {
+        rngSeed: this.now,
+        linesBase: limits.lineBase.base,
+        colorPercentage: limits.colorPercentage.base,
+        bluePercentage: limits.bluePercentage.base,
+        yellowPercentage: limits.yellowPercentage.base,
+        redPercentage: limits.redPercentage.base,
+        description: null
+      };
+    }
     this.getPrecipitations();
 
     const bluePercentage = this.getBluePercentage();
@@ -36,10 +47,14 @@ export default class WeatherParameterizer {
 
   async getWeather() {
     const apiBase = "http://api.openweathermap.org/data/2.5/weather";
-    const resp = await axios.get(
-      `${apiBase}?id=${CITY_ID}&APPID=${WEATHER_API_ID}`
-    );
-    return resp.data;
+    try {
+      const resp = await axios.get(
+        `${apiBase}?id=${CITY_ID}&APPID=${WEATHER_API_ID}`
+      );
+      return resp.data;
+    } catch (e) {
+      return null;
+    }
   }
 
   // get approximate lunar age in days

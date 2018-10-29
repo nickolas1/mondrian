@@ -34,10 +34,10 @@ export default {
       }
     },
     artistString() {
-      try {
-        return `Mondianbot (${this.description.year})`;
-      } catch (e) {
-        return `Mondianbot`;
+      if (this.description.year) {
+        return `Mondrianbot (${this.description.year})`;
+      } else {
+        return `Mondrianbot (${new Date().getFullYear()})`;
       }
     }
   }
@@ -51,6 +51,7 @@ export default {
   font-family: "Helvetica Neue", Helvetica, "Roboto", Arial, sans-serif;
 }
 .description-artist {
+  font-size: 0.9em;
   font-family: "Helvetica Neue", Helvetica, "Roboto", Arial, sans-serif;
 }
 .description-body {
