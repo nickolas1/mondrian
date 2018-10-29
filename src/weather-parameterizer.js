@@ -105,6 +105,7 @@ export default class WeatherParameterizer {
       temperature: Math.round(this.kToF(this.weather.main.temp)),
       description: this.weather.weather.map(w => w.description),
       lunar: this.getLunarPhase(this.getLunarAge()),
+      year: new Date(this.now).getFullYear(),
       time: new Date(this.now).toLocaleTimeString(),
       id: this.now
     };

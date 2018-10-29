@@ -1,22 +1,28 @@
 <template>
   <v-app>
-    <v-content>
-      <v-layout row justify-center>
-        <v-flex xs10>
-          <div class="mondrian-container">
+    <v-container fluid grid-list-md>
+      <v-layout row justify-center align-end wrap>
+        <v-flex xs12
+                sm8
+                md6 offset-md3
+                xl8 offset-xl2>
+          <v-responsive :aspect-ratio="1">
             <Mondrian
-              :rng-seed="rngSeed"
-              :lines-base="linesBase"
-              :color-percentage="colorPercentage"
-              :blue-percentage="bluePercentage"
-              :red-percentage="redPercentage"
-              :yellow-percentage="yellowPercentage"
-              :muted-percentage="mutedPercentage"></Mondrian>
-          </div>
+                    :rng-seed="rngSeed"
+                    :lines-base="linesBase"
+                    :color-percentage="colorPercentage"
+                    :blue-percentage="bluePercentage"
+                    :red-percentage="redPercentage"
+                    :yellow-percentage="yellowPercentage"
+                    :muted-percentage="mutedPercentage"></Mondrian>
+          </v-responsive>
         </v-flex>
-      </v-layout>
-      <v-layout>
-        <Describer v-bind:description="description"></Describer>
+        <v-flex xs10
+                sm8
+                md3 offset-md0
+                xl2 offset-xl0>
+          <Describer v-bind:description="description"></Describer>
+        </v-flex>
       </v-layout>
       <v-layout row justify-center>
         <v-flex xs10>
@@ -30,7 +36,7 @@
             v-on:set-param="setProperty($event)"></Parameterizer>
         </v-flex>
       </v-layout>
-    </v-content>
+    </v-container>
   </v-app>
 </template>
 
@@ -84,5 +90,10 @@ export default {
   height: 85vh;
   width: 85vh;
   margin: auto;
+}
+.foo {
+  border: 1px solid red;
+  height: 100%;
+  width: 100%;
 }
 </style>
