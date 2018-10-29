@@ -90,6 +90,7 @@ export default {
       this.getVerticals();
       this.adjustEndpoints();
       this.getRectangles();
+      this.scaleLinesAndRectangles();
     },
     getSvgWidth() {
       this.width = Math.min(
@@ -98,35 +99,35 @@ export default {
       );
       this.height = this.width; //todo: make rectangles?
     },
-    getLines(nLines, size) {
-      //base line generator
+    getLines(nLines) {
+      //base line generator, generates lines between 0 and 1
       const lambda = Math.floor(this.rand() * 5) + 1;
       let lines = [Math.max(1, poisson(lambda, this.rand))];
       for (let i = 1; i < nLines + 1; i++) {
         lines[i] = lines[i - 1] + poisson(lambda, this.rand);
       }
-      const scale = size / lines[nLines];
-      lines = lines.map(h => Math.floor(h * scale));
+      const scale = 1 / lines[nLines];
+      lines = lines.map(h => h * scale);
       do {
         lines.pop();
-      } while (lines[lines.length - 1] >= size);
+      } while (lines[lines.length - 1] >= 1);
       return lines;
     },
     getHorizontals() {
       // establish base horizontal lines
-      const lines = this.getLines(this.linesBase, this.height);
-      let widthBase = Math.floor(this.height / 64);
-      widthBase += poisson(widthBase / 4, this.rand);
+      const lines = this.getLines(this.linesBase);
+      // set widths assuming size of 512 and scale later
+      const widthBase = 8 + poisson(2, this.rand);
       this.horizontals = lines.map((l, idx) => {
         return {
           id: `horizontal-${idx}`,
-          width: widthBase + poisson(widthBase / 8, this.rand),
+          width: widthBase + poisson(1, this.rand),
           start: {
             x: 0,
             y: l
           },
           end: {
-            x: this.width,
+            x: 1,
             y: l
           }
         };
@@ -134,20 +135,20 @@ export default {
     },
     getVerticals() {
       // establish base vertical lines
-      const lines = this.getLines(this.linesBase, this.width);
-      let widthBase = Math.floor(this.width / 64);
-      widthBase += poisson(widthBase / 4, this.rand);
+      const lines = this.getLines(this.linesBase);
+      // set widths assuming size of 512 and scale later
+      const widthBase = 8 + poisson(2, this.rand);
       this.verticals = lines.map((l, idx) => {
         return {
           id: `vertical-${idx}`,
-          width: widthBase + poisson(widthBase / 8, this.rand),
+          width: widthBase + poisson(1, this.rand),
           start: {
             x: l,
             y: 0
           },
           end: {
             x: l,
-            y: this.height
+            y: 1
           }
         };
       });
@@ -211,9 +212,13 @@ export default {
     },
     getRectangles() {
       // figure out the rectangles via brutal force
+      const epsilon = Number.EPSILON;
       const rectangles = new Map();
-      const xs = [...this.verticals.map(v => v.start.x - 1), this.width - 1];
-      const ys = [...this.horizontals.map(h => h.start.y - 1), this.height - 1];
+      const xs = [...this.verticals.map(v => v.start.x - epsilon), 1 - epsilon];
+      const ys = [
+        ...this.horizontals.map(h => h.start.y - epsilon),
+        1 - epsilon
+      ];
       xs.forEach(x => {
         ys.forEach(y => {
           const rect = this.getBoundingRectangle(x, y);
@@ -225,6 +230,23 @@ export default {
         r.colorClass = this.getColor();
       });
       this.rectangles = rectArray;
+    },
+    scaleLinesAndRectangles() {
+      // coordinates range from 0 to 1 right now and widths assume 512px- scale to svg size
+      this.verticals.forEach(v => (v.width *= this.width / 512));
+      this.horizontals.forEach(v => (v.width *= this.height / 512));
+      [...this.verticals, ...this.horizontals].forEach(l => {
+        l.start.x *= this.width;
+        l.end.x *= this.width;
+        l.start.y *= this.height;
+        l.end.y *= this.height;
+      });
+      this.rectangles.forEach(r => {
+        r.x *= this.width;
+        r.y *= this.height;
+        r.width *= this.width;
+        r.height *= this.height;
+      });
     },
     getColor() {
       // give rectangles some color

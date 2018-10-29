@@ -57,26 +57,37 @@ export default {
   },
   data() {
     return {
-      rngSeed: 1,
-      linesBase: limits.lineBase.base,
-      colorPercentage: limits.colorPercentage.base,
-      bluePercentage: limits.bluePercentage.base,
-      redPercentage: limits.redPercentage.base,
-      yellowPercentage: limits.yellowPercentage.base,
-      mutedPercentage: limits.mutedPercentage.base,
-      description: {}
+      rngSeed: undefined,
+      linesBase: undefined,
+      colorPercentage: undefined,
+      bluePercentage: undefined,
+      redPercentage: undefined,
+      yellowPercentage: undefined,
+      mutedPercentage: undefined,
+      description: undefined
     };
   },
   async mounted() {
     const weatherParameterizer = new WeatherParameterizer();
-    const params = await weatherParameterizer.getParams();
-    this.rngSeed = params.rngSeed;
-    this.linesBase = params.linesBase;
-    this.colorPercentage = params.colorPercentage;
-    this.bluePercentage = params.bluePercentage;
-    this.redPercentage = params.redPercentage;
-    this.yellowPercentage = params.yellowPercentage;
-    this.description = params.description;
+    try {
+      const params = await weatherParameterizer.getParams();
+      this.rngSeed = params.rngSeed;
+      this.linesBase = params.linesBase;
+      this.colorPercentage = params.colorPercentage;
+      this.bluePercentage = params.bluePercentage;
+      this.redPercentage = params.redPercentage;
+      this.yellowPercentage = params.yellowPercentage;
+      this.description = params.description;
+    } catch (e) {
+      this.rngSeed = new Date().valueOf();
+      (this.linesBase = limits.lineBase.base),
+        (this.colorPercentage = limits.colorPercentage.base);
+      this.bluePercentage = limits.bluePercentage.base;
+      this.redPercentage = limits.redPercentage.base;
+      this.yellowPercentage = limits.yellowPercentage.base;
+      this.mutedPercentage = limits.mutedPercentage.base;
+      this.description = {};
+    }
   },
   methods: {
     setProperty($event) {

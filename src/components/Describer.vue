@@ -1,7 +1,7 @@
 <template>
     <div>
     <div class="description-title">
-        Composition No. {{description.id}}
+        {{titleString}}
     </div>
     <div class="description-artist">
         {{artistString}}
@@ -20,7 +20,7 @@ export default {
   },
   computed: {
     titleString() {
-      if (this.description.id) {
+      if (this.description && this.description.id) {
         return `Composition No. ${this.description.id}`;
       } else {
         return `Composition No. ?`;
@@ -41,7 +41,7 @@ export default {
       }
     },
     artistString() {
-      if (this.description.year) {
+      if (this.description && this.description.year) {
         return `Mondrianbot (${this.description.year})`;
       } else {
         return `Mondrianbot (${new Date().getFullYear()})`;
