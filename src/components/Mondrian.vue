@@ -1,6 +1,6 @@
 <template>
-    <div class="svg-container" v-resize="drawEverything">
-        <svg :width="width" :height="height">
+    <div class="svg-container" v-resize="drawEverything" v-if="initialized">
+        <svg :width="width" :height="height" id="mondrian-image">
             <g mask="url(#texture)">
                 <rect v-for="(rectangle, index) of rectangles" :key="index"
                       :x="rectangle.x" :y="rectangle.y"
@@ -56,11 +56,9 @@ export default {
       horizontals: [],
       verticals: [],
       rectangles: [],
-      rand: undefined
+      rand: undefined,
+      initialized: false
     };
-  },
-  mounted() {
-    this.getSvgWidth();
   },
   watch: {
     rngSeed: function() {
@@ -91,6 +89,7 @@ export default {
       this.adjustEndpoints();
       this.getRectangles();
       this.scaleLinesAndRectangles();
+      this.initialized = true;
     },
     getSvgWidth() {
       this.width = Math.min(
