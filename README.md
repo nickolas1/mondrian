@@ -1,4 +1,6 @@
 # mondrian
+Generate random Mondrian-esque svgs with the randomness based on the weather.
+[See it in action here.](https://nickolas1.github.io/mondrian/)
 
 ## Project setup
 ```
