@@ -101,14 +101,15 @@ export default {
     getLines(nLines) {
       //base line generator, generates lines between 0 and 1
       const lambda = Math.floor(this.rand() * 5) + 1;
-      let lines = [Math.max(1, poisson(lambda, this.rand))];
+      let lines = [];
+      lines = [Math.max(1, poisson(lambda, this.rand))];
       for (let i = 1; i < nLines + 1; i++) {
         lines[i] = lines[i - 1] + poisson(lambda, this.rand);
       }
       const scale = 1 / lines[nLines];
       lines = lines.map(h => h * scale);
       do {
-        lines.pop();
+        lines.length === 1 ? (lines[0] *= this.rand()) : lines.pop();
       } while (lines[lines.length - 1] >= 1);
       return lines;
     },
