@@ -145,7 +145,7 @@ export default class WeatherParameterizer {
       return "waxing gibbous";
     }
     if (d < SYNODIC_MONTH_IN_DAYS / 2 + fudgeFactor) {
-      return "tull";
+      return "full";
     }
     if (d < (3 * SYNODIC_MONTH_IN_DAYS) / 4 - fudgeFactor) {
       return "waning gibbous";
@@ -156,6 +156,6 @@ export default class WeatherParameterizer {
     if (d < SYNODIC_MONTH_IN_DAYS - fudgeFactor) {
       return "waning crescent";
     }
-    return "New";
+    return "new";
   }
 }
